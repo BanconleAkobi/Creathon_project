@@ -6,6 +6,7 @@
     <title>EventsForAll - Revolutionary Event Accessibility</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,6 +20,33 @@
             --gradient-3: radial-gradient(circle, rgba(139,92,246,1) 0%, rgba(0,255,136,0.3) 100%);
         }
 
+        body.dyslexic, body.dyslexic * {
+            font-family: 'OpenDyslexic', Arial, sans-serif !important;
+        }
+
+        /* Thème sombre/gris */
+        body.dark-theme {
+            --light: #23272b;
+            --dark: #f1f1f1;
+            background: var(--light) !important;
+            color: var(--dark) !important;
+        }
+        body.dark-theme .nav,
+        body.dark-theme .nav,
+        body.dark-theme .main-container,
+        body.dark-theme .footer,
+        body.dark-theme section,
+        body.dark-theme .ai-matching,
+        body.dark-theme .provider-card,
+        body.dark-theme .calculator-card,
+        body.dark-theme .filter-group {
+            background: rgba(40, 44, 52, 0.95) !important;
+            color: var(--dark) !important;
+        }
+        body.dark-theme .nav-links a,
+        body.dark-theme .footer-links a {
+            color: var(--dark) !important;
+        }
         * {
             margin: 0;
             padding: 0;
@@ -689,6 +717,8 @@
                <li><a href="#experience">Expérience</a></li>
                <li><a href="#technology">Technologie</a></li>
                <li><a href="solutions.html">Prestations</a></li>
+               <li><a href="#" id="toggle-dys">Police Dyslexique</a></li>
+               <li><a href="#" id="toggle-dark">Thème Sombre</a></li>
            </ul>
        </div>
    </nav>
@@ -701,14 +731,10 @@
            <div class="card-desc">Analyse prédictive de l'accessibilité en temps réel pour tous types de handicaps</div>
        </div>
        <div class="floating-card">
-           <div class="card-icon">⚡</div>
-           <div class="card-title">Diagnostic Express</div>
-           <div class="card-desc">5 minutes pour analyser <br> votre festival et <br> obtenir un plan <br> d'accessibilité complet</div>
-       </div>
-       <div class="floating-card">
            <div class="card-icon">🌐</div>
            <div class="card-title">Inclusion Universelle</div>
-           <div class="card-desc">Festivals accessibles aux : <br> PMR,<br> malvoyants,<br> malentendants et <br> personnes neuroatypiques</div>
+           <div class="card-desc">Festivals accessibles aux : <br> PMR,<br> malvoyants,<br> malentendants et <br> personnes neuroatypiques
+                <strong>avec diagnostique en 5 minutes</strong></div>
        </div>
 
        <div class="hero-content">
@@ -831,7 +857,15 @@
             cursor.style.left = mouseX + 'px';
             cursor.style.top = mouseY + 'px';
         });
+        document.getElementById('toggle-dys').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.toggle('dyslexic');
+        });
 
+        document.getElementById('toggle-dark').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.toggle('dark-theme');
+        });
         function animateFollower() {
             followerX += (mouseX - followerX) * 0.5;
             followerY += (mouseY - followerY) * 0.5;

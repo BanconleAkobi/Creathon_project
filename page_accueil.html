@@ -6,6 +6,7 @@
     <title>EventsForAll - Revolutionary Event Accessibility</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=OpenDyslexic:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #00ff88;
@@ -964,6 +965,16 @@
             }
         }
 
+        document.getElementById('toggle-dys').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.toggle('dyslexic');
+        });
+
+        document.getElementById('toggle-dark').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.toggle('dark-theme');
+        });
+        
         function animate() {
             requestAnimationFrame(animate);
             time += 0.01;

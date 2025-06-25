@@ -506,6 +506,33 @@
             margin-bottom: 4rem;
         }
 
+                body.dyslexic, body.dyslexic * {
+            font-family: 'OpenDyslexic', Arial, sans-serif !important;
+        }
+
+        /* Thème sombre/gris */
+        body.dark-theme {
+            --light: #23272b;
+            --dark: #f1f1f1;
+            background: var(--light) !important;
+            color: var(--dark) !important;
+        }
+        body.dark-theme .nav,
+        body.dark-theme .nav,
+        body.dark-theme .main-container,
+        body.dark-theme .footer,
+        body.dark-theme section,
+        body.dark-theme .ai-matching,
+        body.dark-theme .provider-card,
+        body.dark-theme .calculator-card,
+        body.dark-theme .filter-group {
+            background: rgba(40, 44, 52, 0.95) !important;
+            color: var(--dark) !important;
+        }
+        body.dark-theme .nav-links a,
+        body.dark-theme .footer-links a {
+            color: var(--dark) !important;
+        }
         .results-title {
             font-size: 3rem;
             font-weight: 700;
@@ -746,6 +773,8 @@
                <li><a href="index.html#experience">Expérience</a></li>
                <li><a href="index.html#technology">Technologie</a></li>
                <li><a href="solutions.html">Prestations</a></li>
+                <li><a href="#" id="toggle-dys">Police Dyslexique</a></li>
+               <li><a href="#" id="toggle-dark">Thème Sombre</a></li>
             </ul>
         </div>
     </nav>
@@ -1029,6 +1058,16 @@
             cursor.style.top = mouseY + 'px';
         });
 
+        document.getElementById('toggle-dys').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.toggle('dyslexic');
+        });
+
+        document.getElementById('toggle-dark').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.toggle('dark-theme');
+        });
+        
         function animateFollower() {
             followerX += (mouseX - followerX) * 0.5;
             followerY += (mouseY - followerY) * 0.5;
