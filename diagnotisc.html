@@ -637,6 +637,52 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        .theme-switch {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        user-select: none;
+        }
+        .theme-switch input[type="checkbox"] {
+        display: none;
+        }
+        .theme-switch .slider {
+        width: 44px;
+        height: 24px;
+        background: #ccc;
+        border-radius: 24px;
+        position: relative;
+        transition: background 0.3s;
+        box-sizing: border-box;
+        }
+        .theme-switch .slider::before {
+        content: '';
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        width: 18px;
+        height: 18px;
+        background: var(--primary);
+        border-radius: 50%;
+        transition: transform 0.3s, background 0.3s;
+        }
+        .theme-switch input:checked + .slider {
+        background: var(--primary);
+        }
+        .theme-switch input:checked + .slider::before {
+        transform: translateX(20px);
+        background: var(--secondary);
+        }
+        .theme-switch .theme-label {
+        font-size: 0.95rem;
+        color: var(--dark);
+        font-family: 'JetBrains Mono', monospace;
+        opacity: 0.8;
+        }
+        body.dark-theme .theme-switch .theme-label {
+        color: var(--light);
+        }
 
         .card-title {
             font-size: 1.3rem;
@@ -769,12 +815,18 @@
         <div class="nav-container">
             <div class="logo">EventsForAll</div>
             <ul class="nav-links">
-               <li><a href="index.html#home">Accueil</a></li>
-               <li><a href="index.html#experience">Expérience</a></li>
-               <li><a href="index.html#technology">Technologie</a></li>
+               <li><a href="#home">Accueil</a></li>
+               <li><a href="#experience">Expérience</a></li>
+               <li><a href="#technology">Technologie</a></li>
                <li><a href="solutions.html">Prestations</a></li>
-                <li><a href="#" id="toggle-dys">Police Dyslexique</a></li>
-               <li><a href="#" id="toggle-dark">Thème Sombre</a></li>
+               <li><a href="#" id="toggle-dys">Police Dyslexique</a></li>
+                <li>
+                <label class="theme-switch" aria-label="Changer de thème">
+                    <input type="checkbox" id="toggle-dark-switch" />
+                    <span class="slider"></span>
+                    <span class="theme-label">Thème</span>
+                </label>
+                </li>
             </ul>
         </div>
     </nav>
@@ -1063,10 +1115,15 @@
             document.body.classList.toggle('dyslexic');
         });
 
-        document.getElementById('toggle-dark').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.body.classList.toggle('dark-theme');
-        });
+
+        const darkSwitch = document.getElementById('toggle-dark-switch');
+        if (darkSwitch) {
+            // Init état selon le thème déjà actif
+            darkSwitch.checked = document.body.classList.contains('dark-theme');
+            darkSwitch.addEventListener('change', function() {
+                document.body.classList.toggle('dark-theme');
+            });
+        }
         
         function animateFollower() {
             followerX += (mouseX - followerX) * 0.5;
