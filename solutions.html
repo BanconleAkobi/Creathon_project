@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AccessiFest - Solutions & Prestataires</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --secondary: #ff0066;
+            --accent: #8b5cf6;
+            --dark: #0a0a0a;
+            --light: #ffffff;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(45deg, #ff0066, #00ff88);
+            --gradient-3: radial-gradient(circle, rgba(139,92,246,1) 0%, rgba(0,255,136,0.3) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            cursor: none;
+            min-height: 100vh;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        .cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+
+        /* 3D Canvas Background */
+        #webgl-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2rem 4rem;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 10, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary);
+        }
+
+        /* Main Container */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            padding-top: 120px;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero-solutions {
+            text-align: center;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 300% 300%;
+            animation: gradientShift 4s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            margin-bottom: 3rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* AI Matching Section */
+        .ai-matching {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 0 2rem 4rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-matching::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            animation: aiScan 3s infinite;
+        }
+
+        @keyframes aiScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .ai-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .ai-icon {
+            font-size: 2.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .matching-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .match-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .match-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+
+        .match-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .match-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .filters-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .filter-group {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1);
+        }
+
+        .filter-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-input, .filter-select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: var(--light);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .filter-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 25px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        /* Providers Grid */
+        .providers-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .providers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .providers-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            padding: 0.5rem;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--light);
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .view-btn.active {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .provider-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transform-style: preserve-3d;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.3);
+        }
+
+        .provider-header {
+            position: relative;
+            height: 200px;
+            background: var(--gradient-1);
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .provider-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .provider-logo {
+            font-size: 4rem;
+            z-index: 2;
+        }
+
+        .provider-body {
+            padding: 2rem;
+        }
+
+        .provider-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .provider-speciality {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .provider-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .provider-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .provider-tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid var(--accent);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        .provider-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-range {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .price-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .provider-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--gradient-2);
+            color: var(--light);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Map Section */
+        .map-section {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .map-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .map-container {
+            height: 500px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-placeholder {
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .map-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .calculator-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .calculator-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .calc-group {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .calc-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .calc-slider {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            margin-bottom: 1rem;
+        }
+
+        .calc-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .calc-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .total-cost {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        .total-label {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .total-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            animation: countUp 1s ease;
+        }
+
+        @keyframes countUp {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 1.5rem 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-solutions {
+                padding: 2rem 1rem;
+            }
+            
+            .ai-matching {
+                margin: 0 1rem 3rem;
+                padding: 2rem;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .providers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .providers-header {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-follower" id="cursor-follower"></div>
+
+    <!-- WebGL Canvas -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">AccessiFest</div>
+            <ul class="nav-links">
+                <li><a href="page_accueil.html">Accueil</a></li>
+                <li><a href="diagnostic.html">Diagnostic</a></li>
+                <li><a href="#solutions">Solutions</a></li>
+               <li><a href="solutions.html">Prestations</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <section class="hero-solutions">
+            <h1 class="hero-title">Solutions & Prestataires</h1>
+            <p class="hero-subtitle">Découvrez notre réseau d'experts certifiés pour rendre votre festival accessible</p>
+        </section>
+
+        <!-- AI Matching Section -->
+        <section class="ai-matching">
+            <h2 class="ai-title">
+                <span class="ai-icon">🤖</span>
+                IA Matching : Résultats personnalisés
+            </h2>
+            <p style="text-align: center; opacity: 0.8; margin-bottom: 2rem;">
+                Basé sur votre diagnostic, nous avons sélectionné les meilleurs prestataires pour votre événement
+            </p>
+            <div class="matching-results">
+                <div class="match-item">
+                    <div class="match-score">97%</div>
+                    <div class="match-label">Compatibilité PMR</div>
+                </div>
+                <div class="match-item">
+                    <div class="match-score">89%</div>
+                    <div class="match-label">Budget optimal</div>
+                </div>
+                <div class="match-item">
+                    <div class="match-score">94%</div>
+                    <div class="match-label">Localisation</div>
+                </div>
+                <div class="match-item">
+                    <div class="match-score">92%</div>
+                    <div class="match-label">Délais</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <h2 class="filters-title">Affinez votre recherche</h2>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">
+                        🔍 Type de service
+                    </label>
+                    <select class="filter-select" id="service-type">
+                        <option value="">Tous les services</option>
+                        <option value="pmr">Aménagements PMR</option>
+                        <option value="audio">Équipements audio</option>
+                        <option value="visual">Aide visuelle</option>
+                        <option value="interpret">Interprétation LSF</option>
+                        <option value="training">Formation équipes</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        📍 Rayon géographique
+                    </label>
+                    <input type="range" class="calc-slider" id="radius-slider" min="10" max="200" value="50">
+                    <div class="calc-value" id="radius-value">50 km</div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        💰 Budget maximum
+                    </label>
+                    <input type="range" class="calc-slider" id="budget-slider" min="1000" max="100000" value="25000" step="1000">
+                    <div class="calc-value" id="budget-value">25 000€</div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        ⭐ Note minimum
+                    </label>
+                    <div class="filter-tags">
+                        <span class="filter-tag" data-rating="3">3+ ⭐</span>
+                        <span class="filter-tag active" data-rating="4">4+ ⭐</span>
+                        <span class="filter-tag" data-rating="4.5">4.5+ ⭐</span>
+                        <span class="filter-tag" data-rating="5">5 ⭐</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Providers Section -->
+        <section class="providers-section">
+            <div class="providers-header">
+                <h2 class="providers-title">Prestataires recommandés</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid">🔳 Grille</button>
+                    <button class="view-btn" data-view="list">📋 Liste</button>
+                    <button class="view-btn" data-view="map">🗺️ Carte</button>
+                </div>
+            </div>
+
+            <div class="providers-grid" id="providers-grid">
+                <div class="provider-card" data-category="pmr">
+                    <div class="provider-header">
+                        <div class="provider-logo">♿</div>
+                    </div>
+                    <div class="provider-body">
+                        <h3 class="provider-name">AccessiPro</h3>
+                        <p class="provider-speciality">Spécialiste aménagements PMR</p>
+                        <div class="provider-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span class="rating-value">4.9</span>
+                            <span>(127 avis)</span>
+                        </div>
+                        <div class="provider-tags">
+                            <span class="provider-tag">Rampes</span>
+                            <span class="provider-tag">Sanitaires</span>
+                            <span class="provider-tag">Signalétique</span>
+                        </div>
+                        <div class="provider-price">
+                            <span class="price-range">2 500€ - 15 000€</span>
+                            <span class="price-label">selon projet</span>
+                        </div>
+                        <div class="provider-actions">
+                            <button class="action-btn btn-primary">Demander un devis</button>
+                            <button class="action-btn btn-secondary">Voir profil</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-card" data-category="audio">
+                    <div class="provider-header">
+                        <div class="provider-logo">🎧</div>
+                    </div>
+                    <div class="provider-body">
+                        <h3 class="provider-name">SoundAccess</h3>
+                        <p class="provider-speciality">Équipements audio adaptatifs</p>
+                        <div class="provider-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span class="rating-value">4.7</span>
+                            <span>(89 avis)</span>
+                        </div>
+                        <div class="provider-tags">
+                            <span class="provider-tag">Boucles magnétiques</span>
+                            <span class="provider-tag">Casques FM</span>
+                            <span class="provider-tag">Vibrations</span>
+                        </div>
+                        <div class="provider-price">
+                            <span class="price-range">1 800€ - 8 000€</span>
+                            <span class="price-label">location/achat</span>
+                        </div>
+                        <div class="provider-actions">
+                            <button class="action-btn btn-primary">Demander un devis</button>
+                            <button class="action-btn btn-secondary">Voir profil</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-card" data-category="interpret">
+                    <div class="provider-header">
+                        <div class="provider-logo">🤟</div>
+                    </div>
+                    <div class="provider-body">
+                        <h3 class="provider-name">LSF Events</h3>
+                        <p class="provider-speciality">Interprétation langue des signes</p>
+                        <div class="provider-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span class="rating-value">4.8</span>
+                            <span>(156 avis)</span>
+                        </div>
+                        <div class="provider-tags">
+                            <span class="provider-tag">LSF</span>
+                            <span class="provider-tag">Chansigné</span>
+                            <span class="provider-tag">Formation</span>
+                        </div>
+                        <div class="provider-price">
+                            <span class="price-range">450€ - 1 200€</span>
+                            <span class="price-label">par jour</span>
+                        </div>
+                        <div class="provider-actions">
+                            <button class="action-btn btn-primary">Demander un devis</button>
+                            <button class="action-btn btn-secondary">Voir profil</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-card" data-category="visual">
+                    <div class="provider-header">
+                        <div class="provider-logo">👁️</div>
+                    </div>
+                    <div class="provider-body">
+                        <h3 class="provider-name">VisualAid Pro</h3>
+                        <p class="provider-speciality">Solutions pour déficients visuels</p>
+                        <div class="provider-rating">
+                            <span class="stars">⭐⭐⭐⭐</span>
+                            <span class="rating-value">4.6</span>
+                            <span>(94 avis)</span>
+                        </div>
+                        <div class="provider-tags">
+                            <span class="provider-tag">Braille</span>
+                            <span class="provider-tag">Audio-guide</span>
+                            <span class="provider-tag">Podotactile</span>
+                        </div>
+                        <div class="provider-price">
+                            <span class="price-range">1 200€ - 6 500€</span>
+                            <span class="price-label">selon équipements</span>
+                        </div>
+                        <div class="provider-actions">
+                            <button class="action-btn btn-primary">Demander un devis</button>
+                            <button class="action-btn btn-secondary">Voir profil</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-card" data-category="training">
+                    <div class="provider-header">
+                        <div class="provider-logo">🎓</div>
+                    </div>
+                    <div class="provider-body">
+                        <h3 class="provider-name">FormAccess</h3>
+                        <p class="provider-speciality">Formation sensibilisation handicap</p>
+                        <div class="provider-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span class="rating-value">4.9</span>
+                            <span>(203 avis)</span>
+                        </div>
+                        <div class="provider-tags">
+                            <span class="provider-tag">Sensibilisation</span>
+                            <span class="provider-tag">Accueil</span>
+                            <span class="provider-tag">Urgences</span>
+                        </div>
+                        <div class="provider-price">
+                            <span class="price-range">800€ - 2 500€</span>
+                            <span class="price-label">par session</span>
+                        </div>
+                        <div class="provider-actions">
+                            <button class="action-btn btn-primary">Demander un devis</button>
+                            <button class="action-btn btn-secondary">Voir profil</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provider-card" data-category="pmr">
+                    <div class="provider-header">
+                        <div class="provider-logo">🏗️</div>
+                    </div>
+                    <div class="provider-body">
+                        <h3 class="provider-name">MobiStruct</h3>
+                        <p class="provider-speciality">Structures modulaires accessibles</p>
+                        <div class="provider-rating">
+                            <span class="stars">⭐⭐⭐⭐</span>
+                            <span class="rating-value">4.5</span>
+                            <span>(76 avis)</span>
+                        </div>
+                        <div class="provider-tags">
+                            <span class="provider-tag">Plateformes</span>
+                            <span class="provider-tag">Passerelles</span>
+                            <span class="provider-tag">Modulaire</span>
+                        </div>
+                        <div class="provider-price">
+                            <span class="price-range">3 000€ - 12 000€</span>
+                            <span class="price-label">location/montage</span>
+                        </div>
+                        <div class="provider-actions">
+                            <button class="action-btn btn-primary">Demander un devis</button>
+                            <button class="action-btn btn-secondary">Voir profil</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="map-section" id="map-section" style="display: none;">
+            <h2 class="map-title">Localisation des prestataires</h2>
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <div class="map-icon">🗺️</div>
+                    <h3>Carte interactive</h3>
+                    <p>Visualisez la localisation de tous nos prestataires certifiés</p>
+                    <p style="opacity: 0.5; margin-top: 1rem;">Intégration Google Maps disponible en production</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculator Section -->
+        <section class="calculator-section">
+            <h2 class="calculator-title">Calculateur de Budget</h2>
+            <div class="calculator-card">
+                <div class="calculator-grid">
+                    <div class="calc-group">
+                        <label class="calc-label">♿ Aménagements PMR</label>
+                        <input type="range" class="calc-slider" id="pmr-slider" min="0" max="20000" value="8000" step="500">
+                        <div class="calc-value" id="pmr-value">8 000€</div>
+                    </div>
+
+                    <div class="calc-group">
+                        <label class="calc-label">🎧 Équipements audio</label>
+                        <input type="range" class="calc-slider" id="audio-slider" min="0" max="15000" value="5000" step="250">
+                        <div class="calc-value" id="audio-value">5 000€</div>
+                    </div>
+
+                    <div class="calc-group">
+                        <label class="calc-label">👁️ Aide visuelle</label>
+                        <input type="range" class="calc-slider" id="visual-slider" min="0" max="10000" value="3000" step="200">
+                        <div class="calc-value" id="visual-value">3 000€</div>
+                    </div>
+
+                    <div class="calc-group">
+                        <label class="calc-label">🤟 Interprétation LSF</label>
+                        <input type="range" class="calc-slider" id="lsf-slider" min="0" max="5000" value="1500" step="100">
+                        <div class="calc-value" id="lsf-value">1 500€</div>
+                    </div>
+
+                    <div class="calc-group">
+                        <label class="calc-label">🎓 Formation équipes</label>
+                        <input type="range" class="calc-slider" id="training-slider" min="0" max="5000" value="2000" step="100">
+                        <div class="calc-value" id="training-value">2 000€</div>
+                    </div>
+
+                    <div class="calc-group">
+                        <label class="calc-label">🛠️ Installation/Support</label>
+                        <input type="range" class="calc-slider" id="support-slider" min="0" max="8000" value="3000" step="200">
+                        <div class="calc-value" id="support-value">3 000€</div>
+                    </div>
+                </div>
+
+                <div class="total-cost">
+                    <div class="total-label">Budget total estimé</div>
+                    <div class="total-amount" id="total-amount">22 500€</div>
+                    <p style="opacity: 0.7; margin-top: 1rem;">
+                        Prix indicatifs - Devis personnalisés disponibles
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Enhanced cursor tracking
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        let mouseX = 0, mouseY = 0;
+        let followerX = 0, followerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
+
+        function animateFollower() {
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+            follower.style.left = followerX + 'px';
+            follower.style.top = followerY + 'px';
+            requestAnimationFrame(animateFollower);
+        }
+        animateFollower();
+
+        // Three.js Background
+        let scene, camera, renderer, particles, time = 0;
+
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            const canvas = document.getElementById('webgl-canvas');
+            renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            createNetworkParticles();
+            
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0x00ff88, 1, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+
+            animate();
+        }
+
+        function createNetworkParticles() {
+            const particleCount = 300;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3] = (Math.random() - 0.5) * 30;
+                positions[i3 + 1] = (Math.random() - 0.5) * 30;
+                positions[i3 + 2] = (Math.random() - 0.5) * 30;
+
+                colors[i3] = Math.random() * 0.5 + 0.5;
+                colors[i3 + 1] = Math.random() * 0.5 + 0.5;
+                colors[i3 + 2] = 1;
+            }
+
+            const particleGeometry = new THREE.BufferGeometry();
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(particleGeometry, particleMaterial);
+            scene.add(particles);
+
+            // Create connection lines
+            createConnections();
+        }
+
+        function createConnections() {
+            const lineGeometry = new THREE.BufferGeometry();
+            const linePositions = [];
+            const lineColors = [];
+
+            // Create random connections between particles
+            for (let i = 0; i < 50; i++) {
+                const start = Math.floor(Math.random() * 100) * 3;
+                const end = Math.floor(Math.random() * 100) * 3;
+                
+                if (particles && particles.geometry.attributes.position) {
+                    const positions = particles.geometry.attributes.position.array;
+                    
+                    linePositions.push(
+                        positions[start], positions[start + 1], positions[start + 2],
+                        positions[end], positions[end + 1], positions[end + 2]
+                    );
+                    
+                    lineColors.push(
+                        0, 1, 0.5, 0, 1, 0.5
+                    );
+                }
+            }
+
+            lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+            lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
+
+            const lineMaterial = new THREE.LineBasicMaterial({
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending
+            });
+
+            const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+            scene.add(lines);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.005;
+
+            if (particles) {
+                particles.rotation.y = time * 0.2;
+                particles.rotation.x = time * 0.1;
+            }
+
+            const scrollY = window.pageYOffset;
+            camera.position.y = scrollY * 0.0003;
+
+            renderer.render(scene, camera);
+        }
+
+        // Filter functionality
+        const filterTags = document.querySelectorAll('.filter-tag');
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                filterTags.forEach(t => t.classList.remove('active'));
+                tag.classList.add('active');
+            });
+        });
+
+        // View toggle functionality
+        const viewBtns = document.querySelectorAll('.view-btn');
+        const providersGrid = document.getElementById('providers-grid');
+        const mapSection = document.getElementById('map-section');
+
+        viewBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                viewBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const view = btn.getAttribute('data-view');
+                
+                if (view === 'map') {
+                    providersGrid.style.display = 'none';
+                    mapSection.style.display = 'block';
+                } else {
+                    providersGrid.style.display = 'grid';
+                    mapSection.style.display = 'none';
+                    
+                    if (view === 'list') {
+                        providersGrid.style.gridTemplateColumns = '1fr';
+                    } else {
+                        providersGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
+                    }
+                }
+            });
+        });
+
+        // Calculator functionality
+        const sliders = {
+            'radius-slider': 'radius-value',
+            'budget-slider': 'budget-value',
+            'pmr-slider': 'pmr-value',
+            'audio-slider': 'audio-value',
+            'visual-slider': 'visual-value',
+            'lsf-slider': 'lsf-value',
+            'training-slider': 'training-value',
+            'support-slider': 'support-value'
+        };
+
+        Object.keys(sliders).forEach(sliderId => {
+            const slider = document.getElementById(sliderId);
+            const valueElement = document.getElementById(sliders[sliderId]);
+            
+            if (slider && valueElement) {
+                slider.addEventListener('input', () => {
+                    const value = parseInt(slider.value);
+                    
+                    if (sliderId === 'radius-slider') {
+                        valueElement.textContent = `${value} km`;
+                    } else if (sliderId === 'budget-slider') {
+                        valueElement.textContent = `${value.toLocaleString()}€`;
+                    } else {
+                        valueElement.textContent = `${value.toLocaleString()}€`;
+                        updateTotalCost();
+                    }
+                });
+            }
+        });
+
+        function updateTotalCost() {
+            const pmr = parseInt(document.getElementById('pmr-slider').value);
+            const audio = parseInt(document.getElementById('audio-slider').value);
+            const visual = parseInt(document.getElementById('visual-slider').value);
+            const lsf = parseInt(document.getElementById('lsf-slider').value);
+            const training = parseInt(document.getElementById('training-slider').value);
+            const support = parseInt(document.getElementById('support-slider').value);
+            
+            const total = pmr + audio + visual + lsf + training + support;
+            document.getElementById('total-amount').textContent = `${total.toLocaleString()}€`;
+        }
+
+        // Provider card interactions
+        const providerCards = document.querySelectorAll('.provider-card');
+        providerCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+
+        // Mouse interaction effects
+        document.addEventListener('mousemove', (event) => {
+            const target = event.target;
+            if (target.tagName === 'A' || target.tagName === 'BUTTON' || target.classList.contains('provider-card')) {
+                cursor.style.transform = 'scale(1.5)';
+                follower.style.transform = 'scale(1.5)';
+                cursor.style.backgroundColor = '#ff0066';
+            } else {
+                cursor.style.transform = 'scale(1)';
+                follower.style.transform = 'scale(1)';
+                cursor.style.backgroundColor = '#00ff88';
+            }
+        });
+
+        // Service type filter
+        const serviceTypeSelect = document.getElementById('service-type');
+        serviceTypeSelect.addEventListener('change', () => {
+            const selectedCategory = serviceTypeSelect.value;
+            
+            providerCards.forEach(card => {
+                if (selectedCategory === '' || card.getAttribute('data-category') === selectedCategory) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.5s ease';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+
+        // Initialize
+        initThreeJS();
+        updateTotalCost();
+
+        // Add animation for cards appearance
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 100);
+                }
+            });
+        }, observerOptions);
+
+        providerCards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(50px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+
+        console.log('🚀 AccessiFest Solutions - Marketplace d\'Accessibilité Loaded');
+        console.log('✨ Connectez-vous avec les meilleurs prestataires inclusifs');
+    </script>
+</body>
+</html>
