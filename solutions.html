@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AccessiFest - Solutions & Prestataires</title>
+    <title>EventsForAll - Solutions & Prestataires</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -11,8 +11,8 @@
             --primary: #00ff88;
             --secondary: #ff0066;
             --accent: #8b5cf6;
-            --dark: #0a0a0a;
             --light: #ffffff;
+            --dark: #0a0a0a;
             --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --gradient-2: linear-gradient(45deg, #ff0066, #00ff88);
             --gradient-3: radial-gradient(circle, rgba(139,92,246,1) 0%, rgba(0,255,136,0.3) 100%);
@@ -30,8 +30,8 @@
 
         body {
             font-family: 'Space Grotesk', sans-serif;
-            background: var(--dark);
-            color: var(--light);
+            background: var(--light);
+            color: var(--dark);
             overflow-x: hidden;
             cursor: none;
             min-height: 100vh;
@@ -109,7 +109,7 @@
         }
 
         .nav-links a {
-            color: var(--light);
+            color: var(--dark);
             text-decoration: none;
             font-weight: 500;
             position: relative;
@@ -319,7 +319,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
-            color: var(--light);
+            color: var(--dark);
             font-family: 'Space Grotesk', sans-serif;
             font-size: 1rem;
             transition: all 0.3s ease;
@@ -350,7 +350,7 @@
 
         .filter-tag:hover, .filter-tag.active {
             background: var(--primary);
-            color: var(--dark);
+            color: var(--light);
         }
 
         /* Providers Grid */
@@ -388,7 +388,7 @@
             padding: 0.75rem 1.5rem;
             background: transparent;
             border: none;
-            color: var(--light);
+            color: var(--dark);
             cursor: pointer;
             border-radius: 20px;
             transition: all 0.3s ease;
@@ -397,7 +397,7 @@
 
         .view-btn.active {
             background: var(--primary);
-            color: var(--dark);
+            color: var(--light);
         }
 
         .providers-grid {
@@ -544,7 +544,7 @@
 
         .btn-primary {
             background: var(--gradient-2);
-            color: var(--light);
+            color: var(--dark);
         }
 
         .btn-secondary {
@@ -752,7 +752,7 @@
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-container">
-            <div class="logo">AccessiFest</div>
+            <div class="logo">EventsForAll</div>
             <ul class="nav-links">
                 <li><a href="index.html">Accueil</a></li>
                 <li><a href="diagnostic.html">Diagnostic</a></li>
@@ -1390,7 +1390,7 @@
             observer.observe(card);
         });
 
-        console.log('🚀 AccessiFest Solutions - Marketplace d\'Accessibilité Loaded');
+        console.log('🚀 EventsForAll Solutions - Marketplace d\'Accessibilité Loaded');
         console.log('✨ Connectez-vous avec les meilleurs prestataires inclusifs');
     </script>
 </body>
