@@ -773,6 +773,17 @@
             animation: countUp 1s ease;
         }
 
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .logo-img {
+            height: 2.2rem;
+            width: auto;
+            display: inline-block;
+        }
+
         @keyframes countUp {
             from { transform: scale(0.5); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -828,8 +839,11 @@
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-container">
-            <div class="logo">EventsForAll</div>
-            <ul class="nav-links">
+            <div class="logo">
+                <img src="logo_eventsforall.png" alt="Logo EventsForAll" class="logo-img" style="height:2.2rem;vertical-align:middle;margin-right:0.6rem;">
+                <span>EventsForAll</span>
+            </div>   
+                        <ul class="nav-links">
                <li><a href="index.html#home">Accueil</a></li>
                <li><a href="index.html#experience">Expérience</a></li>
                <li><a href="index.html#technology">Technologie</a></li>

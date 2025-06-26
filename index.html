@@ -188,6 +188,7 @@
             flex-direction: column; 
             align-items: center;
             justify-content: center;
+            margin-top: 5rem;
             z-index: 10;
             overflow: hidden;
         }
@@ -587,6 +588,17 @@
             flex-wrap: wrap;
         }
 
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .logo-img {
+            height: 2.2rem;
+            width: auto;
+            display: inline-block;
+        }
+
         .btn-primary, .btn-secondary {
             display: inline-flex;
             align-items: center;
@@ -775,8 +787,11 @@
    <!-- Navigation -->
    <nav class="nav">
        <div class="nav-container">
-           <div class="logo">EventsForAll</div>
-           <ul class="nav-links">
+            <div class="logo">
+                <img src="logo_eventsforall.png" alt="Logo EventsForAll" class="logo-img" style="height:2.2rem;vertical-align:middle;margin-right:0.6rem;">
+                <span>EventsForAll</span>
+            </div>           
+            <ul class="nav-links">
                <li><a href="#home">Accueil</a></li>
                <li><a href="#experience">Expérience</a></li>
                <li><a href="#technology">Technologie</a></li>
